@@ -88,3 +88,15 @@ li span:focus {
   border: 2px solid #007bff;
   background: rgba(179, 207, 255, 0.52);
 }
+
+.complete {
+  color: black;
+  /*  color: black;
+  text-decoration-line: line-through;
+  text-decoration-style: wavy;
+  text-decoration-color: red; */
+
+  /* text-decoration-line: line-through;
+  text-decoration: line-through; */
+  /* text-decoration: underline wavy red; */
+}

@@ -1,7 +1,10 @@
 export default class View {
   constructor() {
     this.initView();
+    this._temporaryTodoText = "";
+    this._initLocalListeners();
   }
+
   displayTodos(todos) {
     // delete all nodes in the todo list
     while (this.todoList.firstChild) {
@@ -29,6 +32,8 @@ export default class View {
           const strike = this.createElement("s");
           strike.textContent = todo.text;
           span.append(strike);
+
+          // span.classList.add("complete");
         } else {
           span.textContent = todo.text;
         }
@@ -42,12 +47,15 @@ export default class View {
       });
     }
   }
+
   initView() {
     // 1.	The root element of the app - #root
     this.app = this.getElement("#root");
+
     // 2.	The title heading - h1
     this.title = this.createElement("h1");
     this.title.textContent = "Todos";
+
     // 3.	A form, input and submit button for adding a todo - form, input, button
     this.form = this.createElement("form");
     this.input = this.createElement("input");
@@ -56,13 +64,15 @@ export default class View {
     this.input.name = "todo";
     this.submitButton = this.createElement("button");
     this.submitButton.textContent = "Submit";
-    // this.submitButton.addEventListener('click', handleSubmit)
+
     // 4.	The todo list - ul
     this.todoList = this.createElement("ul", "todo-list");
+
     // Append the input and submit button to the form
     this.form.append(this.input, this.submitButton);
     this.app.append(this.title, this.form, this.todoList);
   }
+
   bindAddTodo(handler) {
     this.form.addEventListener("submit", event => {
       event.preventDefault();
@@ -72,6 +82,7 @@ export default class View {
       }
     });
   }
+
   bindDeleteTodo(handler) {
     this.todoList.addEventListener("click", event => {
       if (event.target.classList.contains("delete")) {
@@ -80,6 +91,7 @@ export default class View {
       }
     });
   }
+
   bindToggleTodo(handler) {
     this.todoList.addEventListener("change", event => {
       if (event.target.type === "checkbox") {
@@ -88,13 +100,34 @@ export default class View {
       }
     });
   }
-  bindEditTodo(handler) {}
+
+  bindEditTodo(handler) {
+    this.todoList.addEventListener("focusout", event => {
+      if (this._temporaryTodoText) {
+        const id = parseInt(event.target.parentElement.id);
+        handler(id, this._temporaryTodoText);
+        this._temporaryTodoText = "";
+      }
+    });
+  }
+
   get _todoText() {
     return this.input.value;
   }
+
   _resetInput() {
     this.input.value = "";
   }
+
+  // Update temporary state
+  _initLocalListeners() {
+    this.todoList.addEventListener("input", event => {
+      if (event.target.classList.contains("editable")) {
+        this._temporaryTodoText = event.target.innerText;
+      }
+    });
+  }
+
   createElement(tag, className) {
     const element = document.createElement(tag);
     if (className) {
@@ -102,6 +135,7 @@ export default class View {
     }
     return element;
   }
+
   getElement(selector) {
     const element = document.querySelector(selector);
     return element;
