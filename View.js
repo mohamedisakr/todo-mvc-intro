@@ -5,11 +5,45 @@ export default class View {
     this._initLocalListeners();
   }
 
+  initView() {
+    // 1.	The root element of the app - #root
+    this.app = this.getElement("#root");
+
+    // 2.	The title heading - h1
+    this.title = this.createElement("h1");
+    this.title.textContent = "Todos";
+
+    // 3.	A form, input and submit button for adding a todo - form, input, button
+    this.form = this.createElement("form");
+    this.input = this.createElement("input");
+    this.input.type = "text";
+    this.input.placeholder = "Add todo";
+    this.input.name = "todo";
+    this.submitButton = this.createElement("button");
+    this.submitButton.textContent = "Submit";
+
+    // 4.	The todo list - ul
+    this.todoList = this.createElement("ul", "todo-list");
+
+    // Append the input and submit button to the form
+    this.form.append(this.input, this.submitButton);
+    this.app.append(this.title, this.form, this.todoList);
+  }
+
+  get _todoText() {
+    return this.input.value;
+  }
+
+  _resetInput() {
+    this.input.value = "";
+  }
+
   displayTodos(todos) {
     // delete all nodes in the todo list
     while (this.todoList.firstChild) {
       this.todoList.removeChild(this.todoList.firstChild);
     }
+
     if (todos.length === 0) {
       const paragraph = this.createElement("p");
       paragraph.textContent = "Nothing to do! Please add a task";
@@ -48,31 +82,7 @@ export default class View {
     }
   }
 
-  initView() {
-    // 1.	The root element of the app - #root
-    this.app = this.getElement("#root");
-
-    // 2.	The title heading - h1
-    this.title = this.createElement("h1");
-    this.title.textContent = "Todos";
-
-    // 3.	A form, input and submit button for adding a todo - form, input, button
-    this.form = this.createElement("form");
-    this.input = this.createElement("input");
-    this.input.type = "text";
-    this.input.placeholder = "Add todo";
-    this.input.name = "todo";
-    this.submitButton = this.createElement("button");
-    this.submitButton.textContent = "Submit";
-
-    // 4.	The todo list - ul
-    this.todoList = this.createElement("ul", "todo-list");
-
-    // Append the input and submit button to the form
-    this.form.append(this.input, this.submitButton);
-    this.app.append(this.title, this.form, this.todoList);
-  }
-
+  // event listener for the submit event on the form
   bindAddTodo(handler) {
     this.form.addEventListener("submit", event => {
       event.preventDefault();
@@ -83,6 +93,7 @@ export default class View {
     });
   }
 
+  // event listener for delete button click event
   bindDeleteTodo(handler) {
     this.todoList.addEventListener("click", event => {
       if (event.target.classList.contains("delete")) {
@@ -92,6 +103,7 @@ export default class View {
     });
   }
 
+  // event listener for toggle checkbox change event
   bindToggleTodo(handler) {
     this.todoList.addEventListener("change", event => {
       if (event.target.type === "checkbox") {
@@ -101,6 +113,7 @@ export default class View {
     });
   }
 
+  // event listener for edit span focusout event
   bindEditTodo(handler) {
     this.todoList.addEventListener("focusout", event => {
       if (this._temporaryTodoText) {
@@ -109,14 +122,6 @@ export default class View {
         this._temporaryTodoText = "";
       }
     });
-  }
-
-  get _todoText() {
-    return this.input.value;
-  }
-
-  _resetInput() {
-    this.input.value = "";
   }
 
   // Update temporary state
